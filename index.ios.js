@@ -6,8 +6,9 @@ class stopwatch extends Component{
         super(props);
         this.state = {
             timeElapsed: null,
-            stop: true,
-            startTime: ''
+            running: false,
+            startTime: '',
+            firstTime: true
         }
     }
     render(){
@@ -36,21 +37,27 @@ class stopwatch extends Component{
         return (
             <TouchableHighlight onPress={() => this.handleStartPress()} underlayColor='grey'>
                 <Text>
-                    Start!
+                    {this.state.running ? 'Stop' : 'Start'}
                 </Text>
             </TouchableHighlight>
         )
     }
     handleStartPress(){
-        this.state.startTime = new Date();
-        setInterval(() => {
-            if(!this.state.stop){
-                this.setState({
-                    timeElapsed: new Date() - this.state.startTime
-                })
-            }
+        if(this.state.running){
+            clearInterval(this.interval);
+            this.setState({ running: !this.state.running })
+            return;
+        }
+        if(this.state.firstTime){
+            this.state.startTime = new Date();
+            this.setState({ firstTime: false })
+        }
+        this.interval = setInterval(() => {
+            this.setState({
+                timeElapsed: new Date() - this.state.startTime
+            })
         }, 30)
-        this.setState({ stop: !this.state.stop })
+        this.setState({ running: !this.state.running })
     }
     lapButton(){
         return (
